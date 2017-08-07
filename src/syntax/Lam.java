@@ -17,6 +17,14 @@ public class Lam extends Expr {
 	}
 	
 	public String toString(){
-		return "lambda " + this.name + ": " + expr.toString();
+		return "lambda " + this.getName() + ": " + getExpr().toString();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Expr getExpr() {
+		return expr;
 	}
 }
