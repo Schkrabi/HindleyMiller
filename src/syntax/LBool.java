@@ -8,7 +8,7 @@ package syntax;
  *
  */
 public class LBool extends Lit {
-	private boolean value;
+	public final boolean value;
 	
 	public LBool(boolean value){
 		this.value = value;
@@ -16,9 +16,5 @@ public class LBool extends Lit {
 	
 	public String toString(){
 		return Boolean.toString(this.value);
-	}
-
-	public boolean getValue() {
-		return value;
 	}
 }

@@ -8,7 +8,7 @@ package syntax;
  *
  */
 public class Fix extends Expr {
-	private Expr expr;
+	public final Expr expr;
 	
 	public Fix(Expr expr){
 		this.expr = expr;

@@ -8,8 +8,8 @@ package syntax;
  *
  */
 public class App extends Expr {
-	private Expr lExpr;
-	private Expr rExpr;
+	public final Expr lExpr;
+	public final Expr rExpr;
 	
 	public App(Expr lExpr, Expr rExpr){
 		this.lExpr = lExpr;

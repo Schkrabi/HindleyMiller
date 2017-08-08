@@ -8,9 +8,9 @@ package syntax;
  *
  */
 public class If extends Expr {
-	private Expr cond;
-	private Expr tExpr;
-	private Expr fExpr;
+	public final Expr cond;
+	public final Expr tExpr;
+	public final Expr fExpr;
 	
 	public If(Expr cond, Expr tExpr, Expr fExpr){
 		this.cond = cond;

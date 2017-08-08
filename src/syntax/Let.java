@@ -8,9 +8,9 @@ package syntax;
  *
  */
 public class Let extends Expr {
-	private String 	name;
-	private Expr	bind;
-	private Expr	expr;
+	public final String name;
+	public final Expr	bind;
+	public final Expr	expr;
 	
 	public Let(String name, Expr bind, Expr expr){
 		this.name = name;

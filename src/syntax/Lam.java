@@ -8,8 +8,8 @@ package syntax;
  *
  */
 public class Lam extends Expr {
-	private String name;
-	private Expr expr;
+	public final String name;
+	public final Expr expr;
 	
 	public Lam(String name, Expr expr){
 		this.name = name;
@@ -17,14 +17,6 @@ public class Lam extends Expr {
 	}
 	
 	public String toString(){
-		return "lambda " + this.getName() + ": " + getExpr().toString();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Expr getExpr() {
-		return expr;
+		return "lambda " + this.name + ": " + this.expr.toString();
 	}
 }

@@ -8,9 +8,9 @@ package syntax;
  *
  */
 public class Op extends Expr {
-	private Binop binop;
-	private Expr lexpr;
-	private Expr rexpr;
+	public final Binop binop;
+	public final Expr lexpr;
+	public final Expr rexpr;
 	
 	public Op(Binop binop, Expr lexpr, Expr rexpr){
 		this.binop = binop;

@@ -8,17 +8,9 @@ package syntax;
  *
  */
 public class LInt extends Lit {
-	private int value;
+	public final int value;
 	
 	public LInt(int value){
-		this.setValue(value);
-	}
-
-	public int getValue() {
-		return value;
-	}
-
-	public void setValue(int value) {
 		this.value = value;
 	}
 	
