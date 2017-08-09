@@ -6,15 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import syntax.App;
-import syntax.Expr;
-import syntax.Fix;
-import syntax.If;
-import syntax.LBool;
-import syntax.LInt;
-import syntax.Lam;
-import syntax.Let;
-import syntax.Op;
 import syntax.Var;
 import syntax.Binop;
 import types.Scheme;
@@ -26,13 +17,12 @@ import types.TypeEnv;
 import types.VarName;
 
 public class Inference {
-	@SuppressWarnings("unchecked")
 	public static <T> boolean occursCheck(TVar a, Substitutable<T> t) {
-		return t.ftv((T)t).contains(a);
+		return t.ftv().contains(a);
 	}
 	
 	public static  Subst bind(TVar a, Type t) throws Exception{
-		if(t == a) { //TODO check
+		if(t == a) { 
 			return Subst.nullSubst();
 		}
 		if(occursCheck(a, t)) {
@@ -51,7 +41,7 @@ public class Inference {
 			Subst s1 = Inference.unify(l.getLtype(), r.getLtype());
 			Type rltype = l.getRtype();
 			Type rrtype = r.getRtype();
-			Subst s2 = Inference.unify(rltype.apply(s1, rltype), rrtype.apply(s1, rrtype));
+			Subst s2 = Inference.unify(rltype.apply(s1), rrtype.apply(s1));
 			return s1.compose(s2);			
 		}
 		else if(ltype instanceof TVar) {
@@ -73,12 +63,12 @@ public class Inference {
 		for(TVar tvar : sch.getTypes()) {
 			s.put(tvar, VarName.next());
 		}
-		return sch.getType().apply(s, sch.getType());
+		return sch.getType().apply(s);
 	}
 	
 	public static Scheme generalize(TypeEnv env, Type type) {
-		Set<TVar> s = type.ftv(type);
-		s.removeAll(env.ftv(env));
+		Set<TVar> s = type.ftv();
+		s.removeAll(env.ftv());
 		List<TVar> l = new ArrayList<TVar>();
 		l.addAll(s);
 		return new Scheme(l, type);
@@ -100,76 +90,5 @@ public class Inference {
 		m.put(Binop.Mul, new TArr(TCon.typeInt, new TArr(TCon.typeInt, TCon.typeInt)));
 		m.put(Binop.Sub, new TArr(TCon.typeInt, new TArr(TCon.typeInt, TCon.typeInt)));
 		ops = m;
-	}
-	
-	public static Tuple<Subst, Type> infer(TypeEnv env, Expr ex) throws Exception{
-		if(ex instanceof Var) {
-			return lookupEnv(env, (Var)ex);
-		}
-		if(ex instanceof Lam) {
-			TVar tv = VarName.next();
-			Lam lam = (Lam)ex;
-			TypeEnv env1 = env.extend(new Var(lam.name), new Scheme(new ArrayList<TVar>(), tv));
-			Tuple<Subst, Type> t = infer(env1, lam.expr);
-			TArr tarr = new TArr(tv, t.y);			
-			return new Tuple<Subst, Type>(t.x, tarr.apply(t.x, tarr));
-		}
-		if(ex instanceof App) {
-			Expr e1 = ((App)ex).lExpr;
-			Expr e2 = ((App)ex).rExpr;
-			TVar tv = VarName.next();
-			Tuple<Subst, Type> t1 = infer(env, e1);
-			Tuple<Subst, Type> t2 = infer(env.apply(t1.x, env), e2);
-			Subst s3 = unify(t1.y.apply(t2.x, t1.y), new TArr(t2.y, tv));
-			return new Tuple<Subst, Type>(s3.compose(t2.x.compose(t1.x)), tv.apply(s3, tv));
-		}
-		if(ex instanceof Let) {
-			Let let = (Let)ex;
-			Tuple<Subst, Type> t1 = infer(env, let.bind);
-			TypeEnv env1 = env.apply(t1.x, env);
-			Scheme sch = generalize(env1, t1.y);
-			Tuple<Subst, Type> t2 = infer(env1.extend(new Var(let.name), sch), let.expr);
-			return new Tuple<Subst, Type>(t1.x.compose(t2.x), t2.y);
-		}
-		if(ex instanceof If) {
-			If e = (If)ex;
-			Tuple<Subst, Type> t1, t2, t3;
-			t1 = infer(env, e.cond);
-			t2 = infer(env, e.tExpr);
-			t3 = infer(env, e.fExpr);
-			Subst s4, s5;
-			s4 = unify(t1.y, TCon.typeBool);
-			s5 = unify(t2.y, t3.y);
-			return new Tuple<Subst, Type>(	s5.compose(s4.compose(t3.x.compose(t2.x.compose(t1.x)))),
-											t2.y.apply(s5, t2.y));
-		}
-		if(ex instanceof Fix) {
-			Fix fix = (Fix)ex;
-			Tuple<Subst, Type> t = infer(env, fix.expr);
-			TVar tv = VarName.next();
-			Subst s2 = unify(new TArr(tv, tv), t.y);
-			return new Tuple<Subst, Type>(s2, tv.apply(t.x, tv));
-		}
-		if(ex instanceof Op) {
-			Op op = (Op)ex;
-			Tuple<Subst, Type> t1, t2;
-			t1 = infer(env, op.lexpr);
-			t2 = infer(env, op.rexpr);
-			TVar tv = VarName.next();
-			if(!ops.containsKey(op.binop)){
-				throw new Exception("Invalid binop");
-			}
-			Type opt = ops.get(op.binop);
-			Subst s3 = unify(new TArr(t1.y, new TArr(t2.y, tv)), opt);
-			return new Tuple<Subst, Type>(t1.x.compose(t2.x.compose(s3)),tv.apply(s3, tv));
-		}
-		if(ex instanceof LInt) {
-			return new Tuple<Subst, Type>(Subst.nullSubst(), TCon.typeInt);
-		}
-		if(ex instanceof LBool) {
-			return new Tuple<Subst, Type>(Subst.nullSubst(), TCon.typeBool);
-		}
-		
-		throw new Exception("Unable to infer!");
 	}
 }

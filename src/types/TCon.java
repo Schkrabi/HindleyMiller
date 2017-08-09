@@ -3,6 +3,11 @@
  */
 package types;
 
+import java.util.Set;
+import java.util.TreeSet;
+
+import inference.Subst;
+
 /**
  * @author schkrabi
  * Concrete type
@@ -21,6 +26,14 @@ public class TCon extends Type {
 	
 	public String toString(){
 		return this.name;
+	}
+	
+	public Type apply(Subst s) {
+		return this;
+	}
+	
+	public Set<TVar> ftv(){
+		return new TreeSet<TVar>();
 	}
 	
 	public static final Type typeInt = new TCon("Int");

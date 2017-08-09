@@ -3,6 +3,17 @@
  */
 package syntax;
 
+import java.util.ArrayList;
+
+import inference.Subst;
+import inference.Tuple;
+import types.Scheme;
+import types.TArr;
+import types.TVar;
+import types.Type;
+import types.TypeEnv;
+import types.VarName;
+
 /**
  * @author schkrabi
  *
@@ -18,5 +29,19 @@ public class Lam extends Expr {
 	
 	public String toString(){
 		return "lambda " + this.name + ": " + this.expr.toString();
+	}
+
+	@Override
+	public Tuple<Subst, Type> inferTuple(TypeEnv env) throws Exception {
+		TVar tv = VarName.next();
+		TypeEnv env1 = env.extend(new Var(this.name), new Scheme(new ArrayList<TVar>(), tv)); //Problem here?
+		Tuple<Subst, Type> t = this.expr.inferTuple(env1);
+		TArr tarr = new TArr(tv, t.y);			
+		return new Tuple<Subst, Type>(t.x, tarr.apply(t.x));
+	}
+
+	@Override
+	public Type infer() throws Exception {
+		TVar tv = VarName.next();
 	}
 }

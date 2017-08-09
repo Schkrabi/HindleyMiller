@@ -51,23 +51,23 @@ public class Scheme implements Substitutable<Scheme> {
 	}
 
 	@Override
-	public Scheme apply(Subst subst, Scheme t) {
+	public Scheme apply(Subst subst) {
 		Subst s = new Subst();
 		s.putAll(subst);
-		for(TVar tvar : t.getTypes()){
+		for(TVar tvar : this.getTypes()){
 			s.remove(tvar);
 		}
 		
-		return new Scheme(t.getTypes(), t.getType().apply(s, t.getType()));
+		return new Scheme(this.getTypes(), this.getType().apply(s));
 	}
 
 	@Override
-	public Set<TVar> ftv(Scheme t) {
-		Type type = t.getType();
+	public Set<TVar> ftv() {
+		Type type = this.getType();
 		Set<TVar> s = new TreeSet<TVar>();
 		
-		s.addAll(type.ftv(type));
-		s.removeAll(t.getTypes());
+		s.addAll(type.ftv());
+		s.removeAll(this.getTypes());
 		
 		return s;
 	}

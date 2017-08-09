@@ -32,24 +32,24 @@ public class TypeEnv extends TreeMap<Var, Scheme> implements Substitutable<TypeE
 	}
 
 	@Override
-	public TypeEnv apply(Subst subst, TypeEnv t) {
+	public TypeEnv apply(Subst subst) {
 		TypeEnv env = new TypeEnv();
 		
-		for(Map.Entry<Var, Scheme> e : t.entrySet()){
+		for(Map.Entry<Var, Scheme> e : this.entrySet()){
 			Scheme s = e.getValue();
-			env.put(e.getKey(), s.apply(subst, s));
+			env.put(e.getKey(), s.apply(subst));
 		}
 		
 		return env;
 	}
 
 	@Override
-	public Set<TVar> ftv(TypeEnv t) {
+	public Set<TVar> ftv() {
 		Set<TVar> s = new TreeSet<TVar>();
 		
-		for(Map.Entry<Var, Scheme> e : t.entrySet()){
+		for(Map.Entry<Var, Scheme> e : this.entrySet()){
 			Scheme sch = e.getValue();
-			s.addAll(sch.ftv(sch));
+			s.addAll(sch.ftv());
 		}
 		
 		return s;

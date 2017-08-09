@@ -12,6 +12,6 @@ import types.TVar;
  *
  */
 public interface Substitutable<T> {
-	public T apply(Subst subst, T t);
-	public Set<TVar> ftv(T t);	
+	public T apply(Subst subst);
+	public Set<TVar> ftv();	
 }

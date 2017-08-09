@@ -3,6 +3,13 @@
  */
 package syntax;
 
+import inference.Inference;
+import inference.Subst;
+import inference.Tuple;
+import types.Scheme;
+import types.Type;
+import types.TypeEnv;
+
 /**
  * @author schkrabi
  *
@@ -20,5 +27,14 @@ public class Let extends Expr {
 	
 	public String toString(){
 		return "let " + this.name + " (" + this.bind.toString() + ") " + this.expr.toString();
+	}
+
+	@Override
+	public Tuple<Subst, Type> inferTuple(TypeEnv env) throws Exception {
+		Tuple<Subst, Type> t1 = this.bind.inferTuple(env);
+		TypeEnv env1 = env.apply(t1.x);
+		Scheme sch = Inference.generalize(env1, t1.y);
+		Tuple<Subst, Type> t2 = this.expr.inferTuple(env1.extend(new Var(this.name), sch));
+		return new Tuple<Subst, Type>(t1.x.compose(t2.x), t2.y);
 	}
 }
