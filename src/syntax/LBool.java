@@ -3,6 +3,8 @@
  */
 package syntax;
 
+import java.util.Map;
+
 import inference.Subst;
 import inference.Tuple;
 import types.TCon;
@@ -30,7 +32,7 @@ public class LBool extends Lit {
 	}
 
 	@Override
-	public Type infer() {
+	protected Type infer(TypeEnv env, Map<Type, Type> emit) {
 		return TCon.typeBool;
 	}
 }

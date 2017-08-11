@@ -3,6 +3,8 @@
  */
 package syntax;
 
+import java.util.Map;
+
 import inference.Inference;
 import inference.Subst;
 import inference.Tuple;
@@ -39,8 +41,10 @@ public class Var extends Expr implements Comparable<Var> {
 	}
 
 	@Override
-	public Type infer() throws Exception {
-		// TODO Auto-generated method stub
-		throw new Exception("Not Implemented");
+	public Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+		if(!env.containsKey(this)){
+			throw new Exception("Varibale not found");
+		}
+		return Inference.instantiate(env.get(this));
 	}
 }

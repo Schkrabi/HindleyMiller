@@ -3,6 +3,8 @@
  */
 package syntax;
 
+import java.util.Map;
+
 import inference.Inference;
 import inference.Subst;
 import inference.Tuple;
@@ -36,5 +38,13 @@ public class Let extends Expr {
 		Scheme sch = Inference.generalize(env1, t1.y);
 		Tuple<Subst, Type> t2 = this.expr.inferTuple(env1.extend(new Var(this.name), sch));
 		return new Tuple<Subst, Type>(t1.x.compose(t2.x), t2.y);
+	}
+
+	@Override
+	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+		Type t1 = this.bind.infer(env, emit);
+		Scheme sch = Inference.generalize(env, t1);
+		Type t2 = this.expr.infer(env.inLocalEnv(this.name, sch), emit);
+		return t2;
 	}
 }

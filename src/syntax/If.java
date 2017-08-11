@@ -3,6 +3,8 @@
  */
 package syntax;
 
+import java.util.Map;
+
 import inference.Inference;
 import inference.Subst;
 import inference.Tuple;
@@ -40,5 +42,15 @@ public class If extends Expr {
 		s5 = Inference.unify(t2.y, t3.y);
 		return new Tuple<Subst, Type>(	s5.compose(s4.compose(t3.x.compose(t2.x.compose(t1.x)))),
 										t2.y.apply(s5));
+	}
+
+	@Override
+	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+		Type t1 = this.cond.infer(env, emit);
+		Type t2 = this.tExpr.infer(env, emit);
+		Type t3 = this.fExpr.infer(env, emit);
+		emit.put(t1, TCon.typeBool);
+		emit.put(t2, t3);
+		return t2;
 	}
 }
