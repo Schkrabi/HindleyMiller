@@ -2,9 +2,12 @@ package inference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import syntax.Var;
 import syntax.Binop;
@@ -90,5 +93,56 @@ public class Inference {
 		m.put(Binop.Mul, new TArr(TCon.typeInt, new TArr(TCon.typeInt, TCon.typeInt)));
 		m.put(Binop.Sub, new TArr(TCon.typeInt, new TArr(TCon.typeInt, TCon.typeInt)));
 		ops = m;
+	}
+	
+	public static Tuple<Subst, Set<Tuple<Type, Type>>> unifies(Type t1, Type t2) throws Exception{
+		if(t1 == t2){
+			return new Tuple<Subst, Set<Tuple<Type,Type>>>(Subst.nullSubst(), new TreeSet<Tuple<Type, Type>>());
+		}
+		if(t1 instanceof TVar){
+			TVar a = (TVar)t1;
+			Subst su = bind(a, t2);
+			return new Tuple<Subst, Set<Tuple<Type,Type>>>(su, new TreeSet<Tuple<Type, Type>>());
+		}
+		if(t2 instanceof TVar){
+			TVar a = (TVar)t2;
+			Subst su = bind(a, t1);
+			return new Tuple<Subst, Set<Tuple<Type,Type>>>(su, new TreeSet<Tuple<Type, Type>>());
+		}
+		if(		t1 instanceof TArr
+			&&	t2 instanceof TArr){
+			TArr ta1 = (TArr)t1;
+			TArr ta2 = (TArr)t2;
+			List<Type> l1 = new LinkedList<Type>(); //TODO Not good
+			l1.add(ta1.getLtype());
+			l1.add(ta1.getRtype());
+			List<Type> l2 = new LinkedList<Type>(); 
+			l2.add(ta2.getLtype());
+			l2.add(ta2.getRtype());
+			
+			return unifyMany(l1, l2); 
+		}
+		throw new Exception("Unification fail " + t1 + " " + t2);
+	}
+	
+	public static Tuple<Subst, Set<Tuple<Type, Type>>> unifyMany(List<Type> l1, List<Type> l2) throws Exception{
+		if(l1.isEmpty() && l2.isEmpty()){
+			return new Tuple<Subst, Set<Tuple<Type,Type>>>(Subst.nullSubst(), new TreeSet<Tuple<Type, Type>>()); 
+		}
+		Iterator<Type> i1, i2;
+		i1 = l1.iterator();
+		i2 = l2.iterator();
+		while(i1.hasNext() && i2.hasNext()){
+			Type t1 = i1.next();
+			Type t2 = i2.next();
+			
+			Tuple<Subst, Set<Tuple<Type, Type>>> t = unifies(t1, t2);
+			i1.forEachRemaining();
+		}
+		
+	}
+	
+	public static Subst solveConstraints(Set<Tuple<Type, Type>> constraints){
+		Subst su = new Subst();
 	}
 }

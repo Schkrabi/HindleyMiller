@@ -3,8 +3,8 @@
  */
 package syntax;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import inference.Subst;
 import inference.Tuple;
@@ -20,8 +20,8 @@ public abstract class Expr {
 	
 	public Type infer() throws Exception
 	{
-		return this.infer(new TypeEnv(), new TreeMap<Type, Type>());
+		return this.infer(new TypeEnv(), new TreeSet<Tuple<Type, Type>>());
 	}
 	
-	protected abstract Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception;
+	protected abstract Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception;
 }

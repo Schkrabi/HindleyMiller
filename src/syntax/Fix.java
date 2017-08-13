@@ -3,7 +3,7 @@
  */
 package syntax;
 
-import java.util.Map;
+import java.util.Set;
 
 import inference.Inference;
 import inference.Subst;
@@ -38,10 +38,10 @@ public class Fix extends Expr {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception {
 		Type t1 = this.expr.infer(env, emit);
 		TVar tv = VarName.next();
-		emit.put(new TArr(tv, tv), t1);
+		emit.add(new Tuple<Type, Type>(new TArr(tv, tv), t1));
 		return tv;
 	}
 }

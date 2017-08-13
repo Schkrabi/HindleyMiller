@@ -3,7 +3,7 @@
  */
 package syntax;
 
-import java.util.Map;
+import java.util.Set;
 
 import inference.Inference;
 import inference.Subst;
@@ -41,7 +41,7 @@ public class Let extends Expr {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception {
 		Type t1 = this.bind.infer(env, emit);
 		Scheme sch = Inference.generalize(env, t1);
 		Type t2 = this.expr.infer(env.inLocalEnv(this.name, sch), emit);

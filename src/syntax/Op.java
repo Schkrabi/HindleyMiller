@@ -3,7 +3,7 @@
  */
 package syntax;
 
-import java.util.Map;
+import java.util.Set;
 
 import inference.Inference;
 import inference.Subst;
@@ -48,7 +48,7 @@ public class Op extends Expr {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception {
 		Type t1 = this.lexpr.infer(env, emit);
 		Type t2 = this.rexpr.infer(env, emit);
 		TVar tv = VarName.next();
@@ -57,7 +57,7 @@ public class Op extends Expr {
 			throw new Exception("Invalid operation");
 		}
 		Type u2 = Inference.ops.get(this.binop);
-		emit.put(u1, u2);
+		emit.add(new Tuple<Type, Type>(u1, u2));
 		return tv;
 	}
 }

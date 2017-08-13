@@ -3,7 +3,7 @@
  */
 package syntax;
 
-import java.util.Map;
+import java.util.Set;
 
 import inference.Subst;
 import inference.Tuple;
@@ -32,7 +32,7 @@ public class LInt extends Lit {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) {
 		return TCon.typeInt;
 	}
 }

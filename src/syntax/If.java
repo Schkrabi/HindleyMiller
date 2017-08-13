@@ -3,7 +3,7 @@
  */
 package syntax;
 
-import java.util.Map;
+import java.util.Set;
 
 import inference.Inference;
 import inference.Subst;
@@ -45,12 +45,12 @@ public class If extends Expr {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception {
 		Type t1 = this.cond.infer(env, emit);
 		Type t2 = this.tExpr.infer(env, emit);
 		Type t3 = this.fExpr.infer(env, emit);
-		emit.put(t1, TCon.typeBool);
-		emit.put(t2, t3);
+		emit.add(new Tuple<Type, Type>(t1, TCon.typeBool));
+		emit.add(new Tuple<Type, Type>(t2, t3));
 		return t2;
 	}
 }

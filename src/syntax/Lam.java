@@ -4,7 +4,7 @@
 package syntax;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Set;
 
 import inference.Subst;
 import inference.Tuple;
@@ -42,7 +42,7 @@ public class Lam extends Expr {
 	}
 
 	@Override
-	protected Type infer(TypeEnv env, Map<Type, Type> emit) throws Exception {
+	protected Type infer(TypeEnv env, Set<Tuple<Type, Type>> emit) throws Exception {
 		TVar tv = VarName.next();
 		Type t = this.expr.infer(env.inLocalEnv(this.name, new Scheme(new ArrayList<TVar>(), tv)), emit);
 		return new TArr(tv, t);
