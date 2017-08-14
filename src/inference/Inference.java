@@ -126,9 +126,9 @@ public class Inference {
 	}
 	
 	public static Tuple<Subst, Set<Tuple<Type, Type>>> unifyMany(List<Type> l1, List<Type> l2) throws Exception{
-		if(l1.isEmpty() && l2.isEmpty()){
-			return new Tuple<Subst, Set<Tuple<Type,Type>>>(Subst.nullSubst(), new TreeSet<Tuple<Type, Type>>()); 
-		}
+		Subst subst = new Subst();
+		Set<Tuple<Type, Type>> set = new TreeSet<Tuple<Type, Type>>();
+		
 		Iterator<Type> i1, i2;
 		i1 = l1.iterator();
 		i2 = l2.iterator();
@@ -137,12 +137,32 @@ public class Inference {
 			Type t2 = i2.next();
 			
 			Tuple<Subst, Set<Tuple<Type, Type>>> t = unifies(t1, t2);
-			i1.forEachRemaining();
+			i1.forEachRemaining((Type x) -> {x.apply(t.x);});
+			i2.forEachRemaining((Type x) -> {x.apply(t.x);});
+			
+			subst = subst.compose(t.x);
+			set.addAll(t.y);
 		}
 		
+		return new Tuple<Subst, Set<Tuple<Type, Type>>>(subst, set);
 	}
 	
-	public static Subst solveConstraints(Set<Tuple<Type, Type>> constraints){
-		Subst su = new Subst();
+	public static Subst solveConstraints(Set<Tuple<Type, Type>> constraints) throws Exception{
+		Subst subst = new Subst();
+		Set<Tuple<Type, Type>> cstr = new TreeSet<Tuple<Type, Type>>();
+		cstr.addAll(constraints);
+		
+		while(!cstr.isEmpty()) {
+			Iterator<Tuple<Type, Type>> i = cstr.iterator();
+			Tuple<Type, Type> t = i.next(); 
+			Tuple<Subst, Set<Tuple<Type, Type>>> t1 = unifies(t.x, t.y);
+			subst = subst.compose(t1.x);
+			
+			i.forEachRemaining((Tuple<Type, Type> x) -> {x.x.apply(t1.x); x.y.apply(t1.x);});
+			cstr.remove(t);
+			tmp.addAll(t1.y);
+			
+			
+		}
 	}
 }
