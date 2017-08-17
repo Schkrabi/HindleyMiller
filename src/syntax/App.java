@@ -51,4 +51,13 @@ public class App extends Expr {
 		emit.add(new Tuple<Type, Type>(t1, new TArr(t2, tv)));
 		return tv;
 	}
+
+	@Override
+	public int compareTo(Expr o) {
+		if(o instanceof App) {
+			int n = this.lExpr.compareTo(((App) o).lExpr);
+			return n != 0 ? n : this.rExpr.compareTo(((App) o).rExpr);
+		}
+		return super.compareTo(o);
+	}
 }

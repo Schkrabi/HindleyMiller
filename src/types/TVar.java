@@ -12,7 +12,7 @@ import inference.Subst;
  * @author schkrabi
  *
  */
-public class TVar extends Type implements Comparable<TVar> {
+public class TVar extends Type {
 	private String name;
 	
 	public TVar(String name){
@@ -28,8 +28,10 @@ public class TVar extends Type implements Comparable<TVar> {
 	}
 
 	@Override
-	public int compareTo(TVar o) {
-		return this.name.compareTo(o.name);
+	public int compareTo(Type o) {
+		if(o instanceof TVar)
+			return this.name.compareTo(((TVar)o).name);
+		return super.compareTo(o);
 	}
 	
 	@Override

@@ -59,7 +59,7 @@ public class TypeEnv extends TreeMap<Var, Scheme> implements Substitutable<TypeE
 		TypeEnv env = new TypeEnv();
 		env.putAll(this);
 		env.remove(new Var(name));
-		env.extend(new Var(name), scheme);
+		env = env.extend(new Var(name), scheme);
 		return env;
 	}
 }

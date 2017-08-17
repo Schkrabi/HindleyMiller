@@ -50,4 +50,12 @@ public class TArr extends Type {
 		s.addAll(r.ftv());
 		return s;
 	}
+	
+	public int compareTo(Type o) {
+		if(o instanceof TArr) {
+			int n = this.ltype.compareTo(((TArr)o).getLtype());
+			return n != 0 ? n : this.rtype.compareTo(((TArr) o).getRtype()) ;
+		}
+		return super.compareTo(o);
+	}
 }

@@ -44,4 +44,12 @@ public class Fix extends Expr {
 		emit.add(new Tuple<Type, Type>(new TArr(tv, tv), t1));
 		return tv;
 	}
+	
+	@Override
+	public int compareTo(Expr o) {
+		if(o instanceof Fix) {
+			return this.expr.compareTo(((Fix) o).expr);
+		}
+		return super.compareTo(o);
+	}
 }

@@ -5,7 +5,7 @@ import java.util.TreeMap;
 import types.TVar;
 import types.Type;
 
-public class Subst extends TreeMap<TVar, Type> {
+public class Subst extends TreeMap<TVar, Type> /*implements Comparable<Subst>*/ {
 
 	/**
 	 * 
@@ -22,4 +22,10 @@ public class Subst extends TreeMap<TVar, Type> {
 		s.putAll(other);
 		return s;
 	}
+
+	/*@Override
+	public int compareTo(Subst o) {
+		this.keySet().c
+		return 0;
+	}*/
 }

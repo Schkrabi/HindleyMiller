@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import syntax.Var;
 import syntax.Binop;
@@ -129,16 +130,19 @@ public class Inference {
 		Subst subst = new Subst();
 		Set<Tuple<Type, Type>> set = new TreeSet<Tuple<Type, Type>>();
 		
-		Iterator<Type> i1, i2;
-		i1 = l1.iterator();
-		i2 = l2.iterator();
-		while(i1.hasNext() && i2.hasNext()){
-			Type t1 = i1.next();
-			Type t2 = i2.next();
+		List<Type> lList = new LinkedList<Type>(l1);
+		List<Type> rList = new LinkedList<Type>(l2);
+		
+		while(!lList.isEmpty() && !rList.isEmpty()) {
+			Type lType = lList.get(0);
+			Type rType = rList.get(0);
+			lList.remove(0);
+			rList.remove(0);
 			
-			Tuple<Subst, Set<Tuple<Type, Type>>> t = unifies(t1, t2);
-			i1.forEachRemaining((Type x) -> {x.apply(t.x);});
-			i2.forEachRemaining((Type x) -> {x.apply(t.x);});
+			Tuple<Subst, Set<Tuple<Type, Type>>> t = unifies(lType, rType);
+			
+			lList = lList.stream().map((Type x) -> x.apply(t.x)).collect(Collectors.toList());
+			rList = rList.stream().map((Type x) -> x.apply(t.x)).collect(Collectors.toList());
 			
 			subst = subst.compose(t.x);
 			set.addAll(t.y);
@@ -154,15 +158,15 @@ public class Inference {
 		
 		while(!cstr.isEmpty()) {
 			Iterator<Tuple<Type, Type>> i = cstr.iterator();
-			Tuple<Type, Type> t = i.next(); 
-			Tuple<Subst, Set<Tuple<Type, Type>>> t1 = unifies(t.x, t.y);
-			subst = subst.compose(t1.x);
+			Tuple<Type, Type> t = i.next();
+			Tuple<Subst, Set<Tuple<Type, Type>>> u = unifies(t.x, t.y);
+			subst = subst.compose(u.x);
 			
-			i.forEachRemaining((Tuple<Type, Type> x) -> {x.x.apply(t1.x); x.y.apply(t1.x);});
 			cstr.remove(t);
-			tmp.addAll(t1.y);
-			
-			
+			cstr = cstr.stream().map((Tuple<Type, Type> x) -> new Tuple<Type, Type>(x.x.apply(u.x), x.y.apply(u.x))).collect(Collectors.toSet());
+			cstr.addAll(u.y);			
 		}
+		
+		return subst;
 	}
 }

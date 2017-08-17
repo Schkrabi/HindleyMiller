@@ -6,6 +6,11 @@ package main;
 import syntax.Expr;
 import syntax.Lam;
 import syntax.Op;
+
+import java.util.Set;
+import java.util.TreeSet;
+
+import inference.Inference;
 import inference.Subst;
 import inference.Tuple;
 import syntax.App;
@@ -30,6 +35,12 @@ public class Main {
 		try {
 			Tuple<Subst, Type> rslt = e.inferTuple(new TypeEnv());
 			System.out.println(rslt);
+			
+			Set<Tuple<Type, Type>> emit = new TreeSet<Tuple<Type, Type>>();
+			Type t = e.infer(emit);
+			Subst s = Inference.solveConstraints(emit);
+			System.out.println(t);
+			System.out.println(s);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -41,6 +52,12 @@ public class Main {
 		try {
 			Tuple<Subst, Type> rslt = f.inferTuple(new TypeEnv());
 			System.out.println(rslt);
+			
+			Set<Tuple<Type, Type>> emit = new TreeSet<Tuple<Type, Type>>();
+			Type t = f.infer(emit);
+			Subst s = Inference.solveConstraints(emit);
+			System.out.println(t);
+			System.out.println(s);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

@@ -36,6 +36,12 @@ public class TCon extends Type {
 		return new TreeSet<TVar>();
 	}
 	
+	public int compareTo(Type o) {
+		if(o instanceof TCon)
+			return this.name.compareTo(((TCon)o).name);
+		return super.compareTo(o);
+	}
+	
 	public static final Type typeInt = new TCon("Int");
 	public static final Type typeBool = new TCon("Bool");
 }
