@@ -15,7 +15,7 @@ import types.TypeEnv;
  * @author schkrabi
  *
  */
-public class Var extends Expr implements Comparable<Var> {
+public class Var extends Expr {
 	private String name;
 	
 	public Var(String name){
@@ -31,8 +31,10 @@ public class Var extends Expr implements Comparable<Var> {
 	}
 
 	@Override
-	public int compareTo(Var o) {
-		return this.name.compareTo(o.name);
+	public int compareTo(Expr o) {
+		if(o instanceof Var)
+			return this.name.compareTo(((Var)o).name);
+		return super.compareTo(o);
 	}
 	
 	@Override

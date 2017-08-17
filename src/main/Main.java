@@ -48,7 +48,7 @@ public class Main {
 		
 		// \f g h -> f (g h)
 		Expr f = new Lam("f", new Lam("g", new Lam("h", new App(new Var("f"), new App(new Var("g"), new Var("h"))))));
-		System.out.println(e);
+		System.out.println(f);
 		try {
 			Tuple<Subst, Type> rslt = f.inferTuple(new TypeEnv());
 			System.out.println(rslt);

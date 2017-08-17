@@ -96,19 +96,19 @@ public class Inference {
 		ops = m;
 	}
 	
-	public static Tuple<Subst, Set<Tuple<Type, Type>>> unifies(Type t1, Type t2) throws Exception{
+	public static Tuple<Subst, ConstraintSet> unifies(Type t1, Type t2) throws Exception{
 		if(t1 == t2){
-			return new Tuple<Subst, Set<Tuple<Type,Type>>>(Subst.nullSubst(), new TreeSet<Tuple<Type, Type>>());
+			return new Tuple<Subst, ConstraintSet>(Subst.nullSubst(), new ConstraintSet());
 		}
 		if(t1 instanceof TVar){
 			TVar a = (TVar)t1;
 			Subst su = bind(a, t2);
-			return new Tuple<Subst, Set<Tuple<Type,Type>>>(su, new TreeSet<Tuple<Type, Type>>());
+			return new Tuple<Subst, ConstraintSet>(su, new ConstraintSet());
 		}
 		if(t2 instanceof TVar){
 			TVar a = (TVar)t2;
 			Subst su = bind(a, t1);
-			return new Tuple<Subst, Set<Tuple<Type,Type>>>(su, new TreeSet<Tuple<Type, Type>>());
+			return new Tuple<Subst, ConstraintSet>(su, new ConstraintSet());
 		}
 		if(		t1 instanceof TArr
 			&&	t2 instanceof TArr){
@@ -126,9 +126,9 @@ public class Inference {
 		throw new Exception("Unification fail " + t1 + " " + t2);
 	}
 	
-	public static Tuple<Subst, Set<Tuple<Type, Type>>> unifyMany(List<Type> l1, List<Type> l2) throws Exception{
+	public static Tuple<Subst, ConstraintSet> unifyMany(List<Type> l1, List<Type> l2) throws Exception{
 		Subst subst = new Subst();
-		Set<Tuple<Type, Type>> set = new TreeSet<Tuple<Type, Type>>();
+		ConstraintSet set = new ConstraintSet();
 		
 		List<Type> lList = new LinkedList<Type>(l1);
 		List<Type> rList = new LinkedList<Type>(l2);
@@ -139,7 +139,7 @@ public class Inference {
 			lList.remove(0);
 			rList.remove(0);
 			
-			Tuple<Subst, Set<Tuple<Type, Type>>> t = unifies(lType, rType);
+			Tuple<Subst, ConstraintSet> t = unifies(lType, rType);
 			
 			lList = lList.stream().map((Type x) -> x.apply(t.x)).collect(Collectors.toList());
 			rList = rList.stream().map((Type x) -> x.apply(t.x)).collect(Collectors.toList());
@@ -148,7 +148,7 @@ public class Inference {
 			set.addAll(t.y);
 		}
 		
-		return new Tuple<Subst, Set<Tuple<Type, Type>>>(subst, set);
+		return new Tuple<Subst, ConstraintSet>(subst, set);
 	}
 	
 	public static Subst solveConstraints(Set<Tuple<Type, Type>> constraints) throws Exception{
@@ -159,7 +159,7 @@ public class Inference {
 		while(!cstr.isEmpty()) {
 			Iterator<Tuple<Type, Type>> i = cstr.iterator();
 			Tuple<Type, Type> t = i.next();
-			Tuple<Subst, Set<Tuple<Type, Type>>> u = unifies(t.x, t.y);
+			Tuple<Subst, ConstraintSet> u = unifies(t.x, t.y);
 			subst = subst.compose(u.x);
 			
 			cstr.remove(t);
